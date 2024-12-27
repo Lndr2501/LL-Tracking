@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Sendungen verwalten</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Admin - Sendungen verwalten</h1>
+    <div id="loginSection">
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Benutzername" required>
+            <input type="password" id="password" placeholder="Passwort" required>
+            <button type="submit">Login</button>
+        </form>
+        <div id="loginResult"></div>
+    </div>
+    <div id="adminSection" style="display: none;">
+        <form id="createShipmentForm">
+            <input type="text" id="status" placeholder="Status">
+            <input type="text" id="ort" placeholder="Ort">
+            <input type="date" id="datum" placeholder="Datum">
+            <input type="time" id="uhrzeit" placeholder="Uhrzeit">
+            <button type="submit">Sendung erstellen</button>
+        </form>
+        <form id="updateShipmentForm">
+            <input type="text" id="updateNumber" placeholder="Tracking-Nummer" required>
+            <select id="updateStatus">
+                <option value="">Status auswählen</option>
+                <option value="Die Bestelldaten wurden übermittelt.">LL | Die Bestelldaten wurden übermittelt.</option>
+                <option value="The order has been created.">ACB | The order has been created.</option>
+                <option value="Die Produktzahlung wurde getätigt.">LL | Die Produktzahlung wurde getätigt.</option>
+                <option value="The order has been paid by the customer">ACB | The order has been paid by the customer
+                </option>
+                <option value="Order pending..">ACB | Order pending..</option>
+                <option value="Order processing">ACB | Order processing</option>
+                <option value="Order needs confirmation by an LL Administrator.">ACB | Order needs confirmation by an LL
+                    Administrator.</option>
+                <option value="Bestellung wurde bestätigt">LL | Bestellung wurde bestätigt</option>
+                <option value="Purchased">ACB | Purchased</option>
+                <option value="Shipped">ACB | Shipped</option>
+                <option value="Ein Container wurde für die Lieferung zugeteilt">LL | Ein Container wurde für die
+                    Lieferung zugeteilt</option>
+                <option value="Bearbeitet">STO | Bearbeitet</option>
+                <option value="Zugestellt">STO | Zugestellt</option>
+                <option value="QC Completet">ACB | QC Completet</option>
+                <option value="Stored in Warehouse">ACB | Stored in Warehouse</option>
+                <option value="Der Container wurde zum verpacken eingereicht">LL | Der Container wurde zum verpacken
+                    eingereicht</option>
+                <option value="Packing completed">ACB | Packing completed</option>
+                <option value="Versandzahlung erforderlich">LL | Versandzahlung erforderlich</option>
+                <option value="Zahlung erfolgreich">LL | Zahlung erfolgreich</option>
+                <option value="Shipped">ACB | Shipped</option>
+                <option value="The parcel has been picked up">CargoB | The parcel has been picked up</option>
+                <option value="Der Container wurde an unser Lager übergeben">LL | Der Container wurde an unser Lager
+                    übergeben</option>
+                <option value="Die Waren wurden ausgepackt und überprüft.">LL | Die Waren wurden ausgepackt und
+                    überprüft.</option>
+                <option value="Die Waren wurden in das Paket an den Empfänger eingepackt">LL | Die Waren wurden in das
+                    Paket an den Empfänger eingepackt</option>
+                <option value="Sendung erlektronisxh angekündigt">DHL | Sendung erlektronisxh angekündigt</option>
+                <option value="Das Paket wurde an deutsche Post AG übergeben">LL | Das Paket wurde an deutsche Post AG
+                    übergeben</option>
+            </select>
+            <input type="text" id="customStatus" placeholder="Benutzerdefinierter Status">
+            <input type="text" id="updateOrt" placeholder="Ort">
+            <input type="date" id="updateDatum" placeholder="Datum">
+            <input type="time" id="updateUhrzeit" placeholder="Uhrzeit">
+            <button type="submit">Sendung aktualisieren</button>
+        </form>
+        <div id="result"></div>
+    </div>
+    <script src="admin.js"></script>
+    <script>
+        // Setze das heutige Datum und die aktuelle Uhrzeit in die entsprechenden Felder
+        document.addEventListener("DOMContentLoaded", () => {
+            const today = new Date();
+            const date = today.toISOString().split('T')[0];
+            const time = today.toTimeString().split(' ')[0].slice(0, 5);
+
+            document.getElementById("datum").value = date;
+            document.getElementById("uhrzeit").value = time;
+            document.getElementById("updateDatum").value = date;
+            document.getElementById("updateUhrzeit").value = time;
+
+            // Setze den Standardstatus für neue Sendungen
+            document.getElementById("status").value = "LL | Die Bestellung wurde aufgenommen.";
+        });
+    </script>
+</body>
+
+</html>
