@@ -1,3 +1,5 @@
 node_modules
 logins.json
 database.db
+secret.json
+test.js

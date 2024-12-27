@@ -4,15 +4,17 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const session = require("express-session");
 const fs = require("fs");
+const { log } = require("console");
 
 const app = express();
-const db = new sqlite3.Database("./data/database.db");
+const db = new sqlite3.Database(path.join(dataDir, "database.db"));
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
+const secretkey = JSON.parse(fs.readFileSync("secret.json")).secretkey;
 app.use(
   session({
-    secret: "your-secret-key",
+    secret: secretkey,
     resave: false,
     saveUninitialized: true,
   })
@@ -39,11 +41,22 @@ db.serialize(() => {
       ort TEXT,
       datum TEXT,
       uhrzeit TEXT,
-      dhlNumberACBtoLL TEXT,
-      dhlNumberLLtoCustomer TEXT,
       FOREIGN KEY(tracking_number) REFERENCES tracking(number)
     )
   `);
+});
+
+// Route zum Abrufen des Status einer Sendung
+app.get("/track", (req, res) => {
+  log("GET /track");
+  const trackingNumber = req.query.id;
+  if (!trackingNumber) {
+    return res.status(400).json({ error: "Sendungsnummer fehlt" });
+  }
+
+  log(`Suche nach Sendung mit der Nummer: ${trackingNumber}`);
+
+  res.sendFile(path.join(__dirname, "public", "track.html"));
 });
 
 // Admin-Login-Route
@@ -142,15 +155,7 @@ app.post("/admin/create", isAdmin, (req, res) => {
 });
 
 app.post("/admin/update", isAdmin, (req, res) => {
-  const {
-    number,
-    status,
-    ort,
-    datum,
-    uhrzeit,
-    dhlNumberACBtoLL,
-    dhlNumberLLtoCustomer,
-  } = req.body;
+  const { number, status, ort, datum, uhrzeit } = req.body;
 
   // Überprüfen, ob die Tracking-Nummer existiert
   db.get("SELECT * FROM tracking WHERE number = ?", [number], (err, row) => {
@@ -174,16 +179,8 @@ app.post("/admin/update", isAdmin, (req, res) => {
         }
         // Füge den Eintrag in die Verlaufstabelle ein
         db.run(
-          "INSERT INTO tracking_history (tracking_number, status, ort, datum, uhrzeit, dhlNumberACBtoLL, dhlNumberLLtoCustomer) VALUES (?, ?, ?, ?, ?, ?, ?)",
-          [
-            number,
-            status,
-            ort,
-            datum,
-            uhrzeit,
-            dhlNumberACBtoLL,
-            dhlNumberLLtoCustomer,
-          ],
+          "INSERT INTO tracking_history (tracking_number, status, ort, datum, uhrzeit) VALUES (?, ?, ?, ?, ?)",
+          [number, status, ort, datum, uhrzeit],
           function (err) {
             if (err) {
               res.status(500).json({ error: err.message });
@@ -225,7 +222,7 @@ function generateTrackingNumber() {
   return result;
 }
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
 });
